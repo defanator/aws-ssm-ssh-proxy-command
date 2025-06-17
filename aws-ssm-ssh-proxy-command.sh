@@ -17,7 +17,16 @@ ssh_public_key_path="$4"
 
 getInstanceId() {
   local instance_name="$1"
-  local instance_id=$(aws ec2 describe-instances --filters "Name=tag:Name,Values=${instance_name}" --query "Reservations[].Instances[?State.Name == 'running'].InstanceId" --output text)
+  local instance_id
+
+  case "${instance_name}" in
+    i-*|mi-*)
+      instance_id=$(aws ec2 describe-instances --filters "Name=tag:Name,Values=${instance_name}" --query "Reservations[].Instances[?State.Name == 'running'].InstanceId" --output text)
+      ;;
+    ip-*.ec2.internal)
+      instance_id=$(aws ec2 describe-instances --filters "Name=private-dns-name,Values=${instance_name}" --query "Reservations[].Instances[?State.Name == 'running'].InstanceId" --output text)
+      ;;
+  esac
 
   echo "${instance_id}"
 }
