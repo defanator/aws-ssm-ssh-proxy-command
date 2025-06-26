@@ -23,7 +23,7 @@ getInstanceId() {
     i-*|mi-*)
       instance_id=$(aws ec2 describe-instances --filters "Name=tag:Name,Values=${instance_name}" --query "Reservations[].Instances[?State.Name == 'running'].InstanceId" --output text)
       ;;
-    ip-*.ec2.internal)
+    ip-*.ec2.internal|ip-*.compute.internal)
       instance_id=$(aws ec2 describe-instances --filters "Name=private-dns-name,Values=${instance_name}" --query "Reservations[].Instances[?State.Name == 'running'].InstanceId" --output text)
       ;;
   esac
